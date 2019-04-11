@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t gharaszti/react-test -f ./client/Dockerfile.dev
+
+scripts:
+  - docker run gharaszti/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t gharaszti/multi-client ./client
+  - docker build -t gharaszti/multi-nginx ./nginx
+  - docker build -t gharaszti/multi-server ./server
+  - docker build -t gharaszti/multi-worker ./worker
+  #Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #Deploy multi container project to dockerhub
+  - docker push gharaszti/multi-client
+  - docker push gharaszti/multi-nginx
+  - docker push gharaszti/multi-server
+  - docker push gharaszti/multi-worker
