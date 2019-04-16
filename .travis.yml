@@ -7,7 +7,7 @@ services:
 before_install:
   - docker build -t gharaszti/react-test -f ./client/Dockerfile.dev ./client
 
-scripts:
+script:
   - docker run gharaszti/react-test npm test -- --coverage
 
 after_success:
